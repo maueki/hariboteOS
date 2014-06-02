@@ -1,7 +1,8 @@
 #!/usr/bin/make
 
 CC = g++
-CFLAGS = --std=c++0x -Wall -O2 -c -m32
+CFLAGS = --std=c++0x -Wall -O2 -c -m32 \
+	-I/usr/include/x86_64-linux-gnu/c++/4.8/
 
 TARGET = haribote
 IPL = ipl

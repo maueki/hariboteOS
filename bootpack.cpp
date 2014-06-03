@@ -59,11 +59,29 @@ void HariMain(void)
 {
     init_palette();
 
-    char * const p = reinterpret_cast<char*>(0xa0000);
+    char * const vram = reinterpret_cast<char*>(0xa0000);
 
-    boxfill8(p, 320, ColorType::RED,    Rect({{20,  20}, {120, 120}}));
-    boxfill8(p, 320, ColorType::YELLOW, Rect({{70,  50}, {170, 150}}));
-    boxfill8(p, 320, ColorType::GREEN,  Rect({{120, 80}, {220, 180}}));
+    int xsize = 320; 
+    int ysize = 200;
+
+    
+    boxfill8(vram, xsize, ColorType::DARK_CYAN,  Rect({{0,  0},        {xsize-1, ysize-29}}));
+    boxfill8(vram, xsize, ColorType::LIGHT_GRAY, Rect({{0,  ysize-28}, {xsize-1, ysize-28}}));
+    boxfill8(vram, xsize, ColorType::WHITE,      Rect({{0,  ysize-27}, {xsize-1, ysize-27}}));
+    boxfill8(vram, xsize, ColorType::LIGHT_GRAY, Rect({{0,  ysize-26}, {xsize-1, ysize-1}}));
+
+    boxfill8(vram, xsize, ColorType::WHITE,      Rect({{3,  ysize-24}, {59, ysize-24}}));
+    boxfill8(vram, xsize, ColorType::WHITE,      Rect({{2,  ysize-24}, {2,  ysize-4}}));
+    boxfill8(vram, xsize, ColorType::DARK_GRAY,  Rect({{3,  ysize-4},  {59, ysize-4}}));
+    boxfill8(vram, xsize, ColorType::DARK_GRAY,  Rect({{59, ysize-23}, {59, ysize-5}}));
+    boxfill8(vram, xsize, ColorType::BLACK,      Rect({{2,  ysize-3},  {59, ysize-3}}));
+    boxfill8(vram, xsize, ColorType::BLACK,      Rect({{60, ysize-24}, {60, ysize-3}}));
+
+
+    boxfill8(vram, xsize, ColorType::DARK_GRAY,  Rect({{xsize-47, ysize-24}, {xsize-4,  ysize-24}}));
+    boxfill8(vram, xsize, ColorType::DARK_GRAY,  Rect({{xsize-47, ysize-23}, {xsize-47, ysize-4}}));
+    boxfill8(vram, xsize, ColorType::WHITE,      Rect({{xsize-47, ysize-3},  {xsize-4,  ysize-3}}));
+    boxfill8(vram, xsize, ColorType::WHITE,      Rect({{xsize-3,  ysize-24}, {xsize-3,  ysize-3}}));
 	
     for(;;){
         io_hlt();

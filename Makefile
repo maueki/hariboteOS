@@ -34,6 +34,9 @@ ${BOOTPACK}: ${OBJS} ${BOOTPACK}.ls
 %.o: %.c Makefile
 	${CC} ${CFLAGS} $<
 
+%.o: %.cpp Makefile
+	${CC} ${CFLAGS} $<
+
 clean:
 	rm -f *.o *.map ${IPL} ${ASMHEAD} ${BOOTPACK} ${TARGET}.bin
 

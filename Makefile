@@ -7,7 +7,7 @@ CFLAGS = --std=c++0x -Wall -O2 -c -m32 \
 TARGET = haribote
 IPL = ipl
 BOOTPACK = bootpack
-OBJS = crt.o bootpack.o asmfunc.o
+OBJS = crt.o bootpack.o asmfunc.o hankaku.o
 ASMHEAD = asmhead
 
 ${TARGET}.bin: ${IPL} ${ASMHEAD} ${BOOTPACK}
@@ -28,6 +28,9 @@ ${BOOTPACK}: ${OBJS} ${BOOTPACK}.ls
 	ld -T ${BOOTPACK}.ls -o $@ ${OBJS} \
 	-Map ${BOOTPACK}.map --cref
 
+hankaku.c: hankaku.txt hankaku.py
+	python hankaku.py < $< > $@
+
 %.o: %.S Makefile
 	${CC} ${CFLAGS} $<
 
@@ -36,6 +39,8 @@ ${BOOTPACK}: ${OBJS} ${BOOTPACK}.ls
 
 %.o: %.cpp Makefile
 	${CC} ${CFLAGS} $<
+
+all: Makefile
 
 clean:
 	rm -f *.o *.map ${IPL} ${ASMHEAD} ${BOOTPACK} ${TARGET}.bin

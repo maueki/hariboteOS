@@ -53,36 +53,22 @@ typedef std::array<Color, static_cast<size_t>(ColorType::MAX_NUM)> Colors;
 
 void init_palette();
 void set_palette(const Colors&);
+void init_screen(int xsize, int ysize, char* vram);
 void boxfill8(char* vram, int xsize, ColorType c, const Rect& rect);
+
+struct BOOTINFO{
+    char cyls,leds, vmode, reserve;
+    short scrnx, scrny;
+    char *vram;
+};
 
 void HariMain(void)
 {
+    const BOOTINFO* const binfo = reinterpret_cast<BOOTINFO*>(0x0ff0);
+
     init_palette();
+    init_screen(binfo->scrnx, binfo->scrny, binfo->vram);
 
-    char * const vram = reinterpret_cast<char*>(0xa0000);
-
-    int xsize = 320; 
-    int ysize = 200;
-
-    
-    boxfill8(vram, xsize, ColorType::DARK_CYAN,  Rect({{0,  0},        {xsize-1, ysize-29}}));
-    boxfill8(vram, xsize, ColorType::LIGHT_GRAY, Rect({{0,  ysize-28}, {xsize-1, ysize-28}}));
-    boxfill8(vram, xsize, ColorType::WHITE,      Rect({{0,  ysize-27}, {xsize-1, ysize-27}}));
-    boxfill8(vram, xsize, ColorType::LIGHT_GRAY, Rect({{0,  ysize-26}, {xsize-1, ysize-1}}));
-
-    boxfill8(vram, xsize, ColorType::WHITE,      Rect({{3,  ysize-24}, {59, ysize-24}}));
-    boxfill8(vram, xsize, ColorType::WHITE,      Rect({{2,  ysize-24}, {2,  ysize-4}}));
-    boxfill8(vram, xsize, ColorType::DARK_GRAY,  Rect({{3,  ysize-4},  {59, ysize-4}}));
-    boxfill8(vram, xsize, ColorType::DARK_GRAY,  Rect({{59, ysize-23}, {59, ysize-5}}));
-    boxfill8(vram, xsize, ColorType::BLACK,      Rect({{2,  ysize-3},  {59, ysize-3}}));
-    boxfill8(vram, xsize, ColorType::BLACK,      Rect({{60, ysize-24}, {60, ysize-3}}));
-
-
-    boxfill8(vram, xsize, ColorType::DARK_GRAY,  Rect({{xsize-47, ysize-24}, {xsize-4,  ysize-24}}));
-    boxfill8(vram, xsize, ColorType::DARK_GRAY,  Rect({{xsize-47, ysize-23}, {xsize-47, ysize-4}}));
-    boxfill8(vram, xsize, ColorType::WHITE,      Rect({{xsize-47, ysize-3},  {xsize-4,  ysize-3}}));
-    boxfill8(vram, xsize, ColorType::WHITE,      Rect({{xsize-3,  ysize-24}, {xsize-3,  ysize-3}}));
-	
     for(;;){
         io_hlt();
     }
@@ -123,6 +109,27 @@ void set_palette(const Colors& colors)
     io_store_eflags(eflags);
 
     return;
+}
+
+void init_screen(int xsize, int ysize, char* vram)
+{
+    boxfill8(vram, xsize, ColorType::DARK_CYAN,  Rect({{0,  0},        {xsize-1, ysize-29}}));
+    boxfill8(vram, xsize, ColorType::LIGHT_GRAY, Rect({{0,  ysize-28}, {xsize-1, ysize-28}}));
+    boxfill8(vram, xsize, ColorType::WHITE,      Rect({{0,  ysize-27}, {xsize-1, ysize-27}}));
+    boxfill8(vram, xsize, ColorType::LIGHT_GRAY, Rect({{0,  ysize-26}, {xsize-1, ysize-1}}));
+
+    boxfill8(vram, xsize, ColorType::WHITE,      Rect({{3,  ysize-24}, {59, ysize-24}}));
+    boxfill8(vram, xsize, ColorType::WHITE,      Rect({{2,  ysize-24}, {2,  ysize-4}}));
+    boxfill8(vram, xsize, ColorType::DARK_GRAY,  Rect({{3,  ysize-4},  {59, ysize-4}}));
+    boxfill8(vram, xsize, ColorType::DARK_GRAY,  Rect({{59, ysize-23}, {59, ysize-5}}));
+    boxfill8(vram, xsize, ColorType::BLACK,      Rect({{2,  ysize-3},  {59, ysize-3}}));
+    boxfill8(vram, xsize, ColorType::BLACK,      Rect({{60, ysize-24}, {60, ysize-3}}));
+
+
+    boxfill8(vram, xsize, ColorType::DARK_GRAY,  Rect({{xsize-47, ysize-24}, {xsize-4,  ysize-24}}));
+    boxfill8(vram, xsize, ColorType::DARK_GRAY,  Rect({{xsize-47, ysize-23}, {xsize-47, ysize-4}}));
+    boxfill8(vram, xsize, ColorType::WHITE,      Rect({{xsize-47, ysize-3},  {xsize-4,  ysize-3}}));
+    boxfill8(vram, xsize, ColorType::WHITE,      Rect({{xsize-3,  ysize-24}, {xsize-3,  ysize-3}}));
 }
 
 void boxfill8(char* vram, int xsize, ColorType c, const Rect& rect)

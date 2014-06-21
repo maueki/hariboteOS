@@ -51,10 +51,13 @@ struct Rect
 typedef std::tuple<unsigned char, unsigned char, unsigned char> Color;
 typedef std::array<Color, static_cast<size_t>(ColorType::MAX_NUM)> Colors;
 
+extern unsigned char hankaku[0x100][16];
+
 void init_palette();
 void set_palette(const Colors&);
 void init_screen(int xsize, int ysize, char* vram);
 void boxfill8(char* vram, int xsize, ColorType c, const Rect& rect);
+void putfont8(char* vram, int xsize, int x, int y, ColorType c, unsigned char* font);
 
 struct BOOTINFO{
     char cyls,leds, vmode, reserve;
@@ -68,6 +71,9 @@ void HariMain(void)
 
     init_palette();
     init_screen(binfo->scrnx, binfo->scrny, binfo->vram);
+
+    putfont8(binfo->vram, binfo->scrnx, 8, 8, ColorType::WHITE,
+             static_cast<unsigned char*>(hankaku['A']));
 
     for(;;){
         io_hlt();
@@ -139,4 +145,22 @@ void boxfill8(char* vram, int xsize, ColorType c, const Rect& rect)
             vram[y * xsize + x] = static_cast<int>(c);
         }
     }
+}
+
+void putfont8(char* vram, int xsize, int x, int y, ColorType c, unsigned char* font)
+{
+    int i;
+    char *p, d /* data */;
+    static const int addr[] = {0x80, 0x40, 0x20, 0x10,
+                               0x08, 0x04, 0x02, 0x01};
+
+    for(i = 0; i < 16; i++){
+        p = vram + (y + i) * xsize + x;
+        d = font[i];
+        for(int a: addr){
+            if((d & a) != 0) { *p = static_cast<char>(c);}
+            p++;
+        }
+    }
+    return;
 }

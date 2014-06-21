@@ -51,13 +51,12 @@ struct Rect
 typedef std::tuple<unsigned char, unsigned char, unsigned char> Color;
 typedef std::array<Color, static_cast<size_t>(ColorType::MAX_NUM)> Colors;
 
-extern unsigned char hankaku[0x100][16];
-
 void init_palette();
 void set_palette(const Colors&);
 void init_screen(int xsize, int ysize, char* vram);
 void boxfill8(char* vram, int xsize, ColorType c, const Rect& rect);
-void putfont8(char* vram, int xsize, int x, int y, ColorType c, unsigned char* font);
+void putfont8(char* vram, int xsize, int x, int y, ColorType c, const unsigned char* font);
+void putfonts8_asc(char* vram, int xsize, int x, int y, ColorType c, const char* s);
 
 struct BOOTINFO{
     char cyls,leds, vmode, reserve;
@@ -72,8 +71,7 @@ void HariMain(void)
     init_palette();
     init_screen(binfo->scrnx, binfo->scrny, binfo->vram);
 
-    putfont8(binfo->vram, binfo->scrnx, 8, 8, ColorType::WHITE,
-             static_cast<unsigned char*>(hankaku['A']));
+    putfonts8_asc(binfo->vram, binfo->scrnx, 8, 8, ColorType::WHITE, "ABC 123");
 
     for(;;){
         io_hlt();
@@ -147,7 +145,7 @@ void boxfill8(char* vram, int xsize, ColorType c, const Rect& rect)
     }
 }
 
-void putfont8(char* vram, int xsize, int x, int y, ColorType c, unsigned char* font)
+void putfont8(char* vram, int xsize, int x, int y, ColorType c, const unsigned char* font)
 {
     int i;
     char *p, d /* data */;
@@ -161,6 +159,16 @@ void putfont8(char* vram, int xsize, int x, int y, ColorType c, unsigned char* f
             if((d & a) != 0) { *p = static_cast<char>(c);}
             p++;
         }
+    }
+    return;
+}
+
+void putfonts8_asc(char* vram, int xsize, int x, int y, ColorType c, const char* s)
+{
+    extern unsigned char hankaku[0x100][16];
+    for(; *s != 0x00; s++){
+        putfont8(vram, xsize, x, y, c, hankaku[*s]);
+        x += 8;
     }
     return;
 }

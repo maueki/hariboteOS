@@ -83,7 +83,7 @@ putloop:
 	int 0x10
 	jmp putloop
 
-.section .sign
+.section .sign, "a"
 sign:
 .byte 0x55
 .byte 0xaa

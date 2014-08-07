@@ -41,7 +41,7 @@ fin:
 	hlt
 	jmp fin
 
-.section .sign
+.section .sign, "a"
 sign:
 .byte 0x55
 .byte 0xaa

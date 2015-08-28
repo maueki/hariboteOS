@@ -9,7 +9,7 @@ IPL=ipl
 BOOTPACK=bootpack
 OBJS=bootpack.o crt.o asmfunc.o
 ASMHEAD=asmhead
-LD=/usr/local/i386-toolchain/bin/i386-elf-ld
+LD=i386-elf-ld
 
 ${TARGET}.bin: ${IPL} ${ASMHEAD} ${BOOTPACK}
 	dd if=/dev/zero of=$@ bs=512 count=2880 >/dev/null 2>&1

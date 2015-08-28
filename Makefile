@@ -29,12 +29,9 @@ ${BOOTPACK}: ${OBJS} ${BOOTPACK}.ls
 	${LD} -T ${BOOTPACK}.ls -o $@ ${OBJS} \
 	-Map ${BOOTPACK}.map --cref
 
-.SUFFIXES: .o .rs .S .c
+.SUFFIXES: .o .rs .S
 
 .S.o:
-	${CC} ${CFLAGS} $<
-
-.c.o:
 	${CC} ${CFLAGS} $<
 
 .rs.o:

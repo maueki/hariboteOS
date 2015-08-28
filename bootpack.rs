@@ -3,10 +3,8 @@ extern {
 }
 
 #[no_stack_check]
-#[no_mangle]
-pub extern fn hari_main()
-{
+pub unsafe fn hari_main() {
     loop {
-        unsafe {io_hlt();}
+        io_hlt();
     }
 }

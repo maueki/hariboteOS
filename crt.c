@@ -1,8 +1,7 @@
-extern void HariMain(void);
+extern void hari_main(void);
 
 void _start(void)
 {
-	
-	HariMain();
+	hari_main();
 	return;
 }

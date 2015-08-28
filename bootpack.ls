@@ -16,5 +16,11 @@ SECTIONS {
     { *(.rodata*) }/* Constant data (R/O) */
   .bss 0x280000 + SIZEOF(.text) + SIZEOF(.data) + SIZEOF(.rodata):
     AT ( ADDR (.text) + SIZEOF (.text) + SIZEOF (.data) + SIZEOF(.rodata))
-    { *(.bss) }   /* Uninitialized data */
+  { *(.bss) }   /* Uninitialized data */
+
+/DISCARD/ : {
+*(.comment)
+*(.eh_frame)
+*(.rel.eh_frame)
+    }
 }

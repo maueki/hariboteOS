@@ -1,13 +1,15 @@
 #!/usr/bin/make
 
-CC = g++
-CFLAGS = --std=c++0x -Wall -O2 -c -m32
+CC=gcc
+CFLAGS=-Wall -O2 -c -m32
 
-TARGET = haribote
-IPL = ipl
-BOOTPACK = bootpack
-OBJS = crt.o bootpack.o asmfunc.o
-ASMHEAD = asmhead
+RUSTC=rustc
+TARGET=haribote
+IPL=ipl
+BOOTPACK=bootpack
+OBJS=bootpack.o crt.o asmfunc.o
+ASMHEAD=asmhead
+LD=/usr/local/i386-toolchain/bin/i386-elf-ld
 
 ${TARGET}.bin: ${IPL} ${ASMHEAD} ${BOOTPACK}
 	dd if=/dev/zero of=$@ bs=512 count=2880 >/dev/null 2>&1
@@ -16,22 +18,27 @@ ${TARGET}.bin: ${IPL} ${ASMHEAD} ${BOOTPACK}
 	dd if=${BOOTPACK} of=$@ conv=notrunc seek=2 >/dev/null 2>&1
 
 ${IPL}: ${IPL}.o ${IPL}.ls
-	ld -T ${IPL}.ls -o $@ ${IPL}.o \
+	${LD} -T ${IPL}.ls -o $@ ${IPL}.o \
 	-Map ${IPL}.map --cref
 
 ${ASMHEAD}: ${ASMHEAD}.o ${ASMHEAD}.ls
-	ld -T ${ASMHEAD}.ls -o $@ ${ASMHEAD}.o \
+	${LD} -T ${ASMHEAD}.ls -o $@ ${ASMHEAD}.o \
 	-Map ${ASMHEAD}.map --cref
 
 ${BOOTPACK}: ${OBJS} ${BOOTPACK}.ls
-	ld -T ${BOOTPACK}.ls -o $@ ${OBJS} \
+	${LD} -T ${BOOTPACK}.ls -o $@ ${OBJS} \
 	-Map ${BOOTPACK}.map --cref
 
-%.o: %.S Makefile
+.SUFFIXES: .o .rs .S .c
+
+.S.o:
 	${CC} ${CFLAGS} $<
 
-%.o: %.c Makefile
+.c.o:
 	${CC} ${CFLAGS} $<
+
+.rs.o:
+	${RUSTC} -O --target=i686-unknown-linux-gnu  -C relocation-model=static --crate-type lib -o $@ --emit obj $<
 
 clean:
 	rm -f *.o *.map ${IPL} ${ASMHEAD} ${BOOTPACK} ${TARGET}.bin

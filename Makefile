@@ -10,6 +10,7 @@ BOOTPACK=bootpack
 OBJS=bootpack.o crt.o asmfunc.o
 ASMHEAD=asmhead
 LD=i386-elf-ld
+QEMU=qemu-system-i386
 
 ${TARGET}.bin: ${IPL} ${ASMHEAD} ${BOOTPACK}
 	dd if=/dev/zero of=$@ bs=512 count=2880 >/dev/null 2>&1
@@ -39,5 +40,8 @@ ${BOOTPACK}: ${OBJS} ${BOOTPACK}.ls
 
 clean:
 	rm -f *.o *.map ${IPL} ${ASMHEAD} ${BOOTPACK} ${TARGET}.bin
+
+run: ${TARGET}.bin
+	${QEMU} -fda $<
 
 .PHONY: all clean

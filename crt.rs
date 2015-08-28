@@ -1,5 +1,8 @@
+#![feature(asm)]
 
 mod bootpack;
+mod asmfunc;
+
 use bootpack::*;
 
 #[no_mangle]

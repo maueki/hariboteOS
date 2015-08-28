@@ -1,6 +1,4 @@
-extern {
-    fn io_hlt();
-}
+use asmfunc::*;
 
 #[no_stack_check]
 pub unsafe fn hari_main() {

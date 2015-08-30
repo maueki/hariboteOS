@@ -7,7 +7,7 @@ OUTPUT_ARCH(i386)
 
 SECTIONS {  
   .text 0x00: 
-    { *(.text) }  /* Executable codes */
+    { *(.text .text.*) }  /* Executable codes */
   .data 0x280000 + SIZEOF(.text): 
     AT ( ADDR (.text) + SIZEOF (.text) )
     { *(.data) }  /* Initialized data */

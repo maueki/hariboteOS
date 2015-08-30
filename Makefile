@@ -36,7 +36,7 @@ ${BOOTPACK}: ${OBJS} ${BOOTPACK}.ls
 	${CC} ${CFLAGS} $<
 
 .rs.o:
-	${RUSTC} -O --target=i686-unknown-linux-gnu  -C relocation-model=static --crate-type lib -o $@ --emit obj $<
+	${RUSTC} -O --target=i686-unknown-linux-gnu  -C no-stack-check -C relocation-model=static --crate-type lib -o $@ --emit=obj,dep-info $<
 
 clean:
 	rm -f *.o *.map ${IPL} ${ASMHEAD} ${BOOTPACK} ${TARGET}.bin

@@ -7,10 +7,19 @@ RUSTC=rustc
 TARGET=haribote
 IPL=ipl
 BOOTPACK=bootpack
-OBJS=crt.o
+LIBCORE:=libcore.rlib
+OBJS=crt.o $(LIBCORE)
 ASMHEAD=asmhead
 LD=i386-elf-ld
 QEMU=qemu-system-i386
+WORK_DIR=$(HOME)/work
+RUST_SRC=${WORK_DIR}/rustc-1.2.0-src.tar.gz
+TARGETSPEC:=target.json
+
+all: ${TARGET}.bin
+
+UPDATE:
+	curl https://static.rust-lang.org/dist/rustc-nightly-src.tar.gz -o ${RUST_SRC}
 
 ${TARGET}.bin: ${IPL} ${ASMHEAD} ${BOOTPACK}
 	dd if=/dev/zero of=$@ bs=512 count=2880 >/dev/null 2>&1
@@ -27,16 +36,22 @@ ${ASMHEAD}: ${ASMHEAD}.o ${ASMHEAD}.ls
 	-Map ${ASMHEAD}.map --cref
 
 ${BOOTPACK}: ${OBJS} ${BOOTPACK}.ls
-	${LD} -T ${BOOTPACK}.ls -o $@ ${OBJS} \
+	${LD} --gc-sections -T ${BOOTPACK}.ls -o $@ ${OBJS} \
 	-Map ${BOOTPACK}.map --cref
+
+${WORK_DIR}/libcore/lib.rs: ${WORK_DIR}/rustc-1.2.0-src.tar.gz
+	tar -xmf ${WORK_DIR}/rustc-1.2.0-src.tar.gz -C ${WORK_DIR} rustc-1.2.0/src/libcore --transform 's~^rustc-1.2.0/src/~~'
+
+$(LIBCORE): ${WORK_DIR}/libcore/lib.rs Makefile
+	$(RUSTC) -O --cfg arch__x86 --target=$(TARGETSPEC) -o $@ --crate-type=lib --emit=link,dep-info $<
 
 .SUFFIXES: .o .rs .S
 
 .S.o:
 	${CC} ${CFLAGS} $<
 
-.rs.o:
-	${RUSTC} -O --target=i686-unknown-linux-gnu  -C no-stack-check -C relocation-model=static --crate-type lib -o $@ --emit=obj,dep-info $<
+crt.o: crt.rs bootpack.rs asmfunc.rs Makefile $(LIBCORE)
+	${RUSTC} -O --target=$(TARGETSPEC) -C relocation-model=static --crate-type lib -o $@ --emit=obj,dep-info --extern core=$(LIBCORE) $<
 
 clean:
 	rm -f *.o *.map ${IPL} ${ASMHEAD} ${BOOTPACK} ${TARGET}.bin

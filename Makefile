@@ -19,7 +19,7 @@ TARGETSPEC:=target.json
 all: ${TARGET}.bin
 
 UPDATE:
-	curl https://static.rust-lang.org/dist/rustc-nightly-src.tar.gz -o ${RUST_SRC}
+	curl https://static.rust-lang.org/dist/rustc-1.2.0-src.tar.gz -o ${RUST_SRC}
 
 ${TARGET}.bin: ${IPL} ${ASMHEAD} ${BOOTPACK}
 	dd if=/dev/zero of=$@ bs=512 count=2880 >/dev/null 2>&1
